@@ -1,4 +1,5 @@
 from utils import *
+from bwt import *
 
 
 def encode(input_filename, destination_filename):
@@ -10,6 +11,8 @@ def encode(input_filename, destination_filename):
 	m = len(img[0])
 
 	components = []
+
+	req = 0
 
 	for i in range(0, n):
 		for j in range(0, m):
@@ -34,28 +37,28 @@ def encode(input_filename, destination_filename):
 
 				a.pop(0)
 
-				if x-1 >= 0 and (img[x-1][y][0] != 0 or img[x-1][y][1] != 0 or img[x-1][y][2] != 0) and almostEqualPixels([r, g, b], img[x-1][y], 1000):
+				if x-1 >= 0 and (img[x-1][y][0] != 0 or img[x-1][y][1] != 0 or img[x-1][y][2] != 0) and isEqualPixel([r, g, b], img[x-1][y]):
 					bfs_str += '1'
 					a.append([x-1, y])
 					img[x-1][y] = [0, 0, 0]
 				else:
 					bfs_str += '0'
 
-				if x+1 < n and (img[x+1][y][0] != 0 or img[x+1][y][1] != 0 or img[x+1][y][2] != 0) and almostEqualPixels([r, g, b], img[x+1][y], 1000):
+				if x+1 < n and (img[x+1][y][0] != 0 or img[x+1][y][1] != 0 or img[x+1][y][2] != 0) and isEqualPixel([r, g, b], img[x+1][y]):
 					bfs_str += '1'
 					a.append([x+1, y])
 					img[x+1][y] = [0, 0, 0]
 				else:
 					bfs_str += '0'
 
-				if y-1 >= 0 and (img[x][y-1][0] != 0 or img[x][y-1][1] != 0 or img[x][y-1][2] != 0) and almostEqualPixels([r, g, b], img[x][y-1], 1000):
+				if y-1 >= 0 and (img[x][y-1][0] != 0 or img[x][y-1][1] != 0 or img[x][y-1][2] != 0) and isEqualPixel([r, g, b], img[x][y-1]):
 					bfs_str += '1'
 					a.append([x, y-1])
 					img[x][y-1] = [0, 0, 0]
 				else:
 					bfs_str += '0'
 
-				if y+1 < m and (img[x][y+1][0] != 0 or img[x][y+1][1] != 0 or img[x][y+1][2] != 0) and almostEqualPixels([r, g, b], img[x][y+1], 1000):
+				if y+1 < m and (img[x][y+1][0] != 0 or img[x][y+1][1] != 0 or img[x][y+1][2] != 0) and isEqualPixel([r, g, b], img[x][y+1]):
 					bfs_str += '1'
 					a.append([x, y+1])
 					img[x][y+1] = [0, 0, 0]
@@ -76,10 +79,10 @@ def encode(input_filename, destination_filename):
 		final_str += intToBinStr(len(component[3]), 3)
 		final_str += component[3]
 
-	while len(final_str)%8 > 0:
+	while len(final_str)%4 > 0:
 		final_str += '0'
 
-	res = binStrToStr(final_str)
+	res = bwtMtfCompress(final_str)
 	res = bytes(res, 'utf-8')
 
 	f = open(destination_filename, 'wb')
